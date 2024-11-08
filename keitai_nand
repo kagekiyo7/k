@@ -12,7 +12,10 @@
 
 0       string   SSR200            Samsung SSR200 FTL
 
-0       string   \x91\x5A\x49\x2C  Samsung XSR1 FTL
+0       string   \x91\x5A\x49\x2C  Samsung early XSR FTL
+
+0       string   \x64              Samsung XSR1 FTL
+>12     string   !XSR1             {invalid}
 
 0       string   \x64              Samsung XSR2 FTL
 >12     string   !XSR2             {invalid}
@@ -130,7 +133,11 @@
 
 
 3       string   \x03\x00\x05\x00\x05\xD2\xFF\xFF\x00  CG2 Flex
+0       string   \xEb\x52\x90NTFS\x20\x20\x20\x20      NTFS filesystem
+0       string   NXSB                                  APFS filesystem
 
+0       string   \xFF\xD8\xFF\xE0\x00\x10JFIF\x00\x01\x02 TFS filesystem
+0       string   P\x00F\x00S\x00F\x00F\x00S\x00           Old ffs filesystem
 
 
 #################################
@@ -149,21 +156,44 @@
 0       string   NO\x20NAME        FAT String (NO NAME)
 0       string   $RFS_LOGLO$       Samsung RFS Root File String ($RFS_LOGLO$)
 
+
+0       string   File\x20System    File System String
+>0      string   x                 (%s)
+0       string   file\x20system    File System String
+>0      string   x                 (%s)
+0       string   filesystem        File System String
+>0      string   x                 (%s)
+0       string   Filesystem        File System String
+>0      string   x                 (%s)
+
+0       string   NAND              NAND String
+>0      string   x                 (%s)
+0       string   nand              NAND String
+>0      string   x                 (%s)
+
+0       string   NOR\20            NOR String
+>0      string   x                 (%s)
+
 0       string   FSR_STL           FSR_STL String
 >0      string   x                 (%s)
 
-
-0       string   XSR_1.           String
+0       string   XSR_1.            String
 >0      string   x                 (%s)
 
-0       string   FSR_1.           String
-
+0       string   FSR_1.            String
 >0      string   x                 (%s)
 
-0       string   Samsung           String
+0       string   nvm/              EFS1 (Embedded File System) String
 >0      string   x                 (%s)
 
-0       string   UniStore          String
+0       string   SAMGUNG            String
+>0      string   x                 (%s)
+1       string   amsung            String
+>0      string   x                 (%s)
+
+0       string   UNISTORE          String
+>0      string   x                 (%s)
+1       string   niStore          String
 >0      string   x                 (%s)
 
 0       string   UniFS             String
@@ -178,13 +208,54 @@
 0       string   IMRC              String
 >0      string   x                 (%s)
 
-0       string   Toshiba           String
+0       string   TOSHIBA           String
+>0      string   x                 (%s)
+1       string   oshiba            String
 >0      string   x                 (%s)
 
-0       string   Hynix              String
+0       string   FUGUE             String
+>0      string   x                 (%s)
+1       string   ugue              String
 >0      string   x                 (%s)
 
-0       string   Micron            String
+0       string   LINUX             String
+>0      string   x                 (%s)
+1       string   inux              String
+>0      string   x                 (%s)
+
+0       string   Hynix             String
+>0      string   x                 (%s)
+
+0       string   MICRON            String
+>0      string   x                 (%s)
+1       string   icron             String
+>0      string   x                 (%s)
+
+0       string   NTFS              String
+>0      string   x                 (%s)
+
+0       string   OMAP              String
+>0      string   x                 (%s)
+
+0       string   MOAP              String
+>0      string   x                 (%s)
+
+0       string   ITRON             String
+>0      string   x                 (%s)
+1       string   tron            String
+>0      string   x                 (%s)
+
+0       string   NUCLEUS           String
+>0      string   x                 (%s)
+1       string   ucleus            String
+>0      string   x                 (%s)
+
+0       string   SYMBIAN           String
+>0      string   x                 (%s)
+1       string   ymbian            String
+>0      string   x                 (%s)
+
+0       string   XSR1d             String
 >0      string   x                 (%s)
 
 0       string   EFS2              String (EFS2)
@@ -197,21 +268,31 @@
 
 
 
+
+
 #################################
 ##        Unconfirmed          ##
 #################################
+
+#https://github.com/nilfs-dev/nilfs2-module/blob/master/fs/nilfs2_fs.h
+0       string   \x1e\xaf\xfa\x11  NILFS2 filesystem
 
 # https://github.com/torvalds/linux/blob/master/include/uapi/linux/magic.h
 0       string   \xF2\xF5\x20\x10  F2FS filesystem
 0       string   \x53\x46\x41\x4F  AFS filesystem
 
 # https://android.googlesource.com/kernel/tegra.git/+/android-tegra-3.10/fs/logfs/logfs_abi.h
-0       string   \x7a\x3a\x8e\x5c\xb9\xd5\xbf\x67 LOGFS filesystem (64bit)
-0       string   \xb2\x1f\x20\x5a\xc9\x7e\x81\x68 Old LOGFS filesystem (64bit)
-0       string   \xc9\x7e\x81\x68 LOGFS filesystem (32bit)
+0       string   \x7a\x3a\x8e\x5c\xb9\xd5\xbf\x67      LogFS filesystem
+0       string   \x67\xbf\xd5\xb9\x5c\x8e\x3a\x7a      LogFS filesystem (big)
+0       string   \xc9\x7e\x81\x68                      LOGFS filesystem (U32)
+# https://github.com/prasad-joshi/logfsprogs/commit/f291a6a57e9639ea63203803e0807ea1cb2ee394
+0       string   \xb2\x1f\x20\x5a\xc9\x7e\x81\x68      Old LOGFS filesystem 
+0       string   \x68\x81\x7e\xc9\x5a\x20\x1f\xb2      Old LOGFS filesystem (big)
 
 
-0                   uleshort    0x1984      Old JFFS2 filesystem, little endian
+
+# https://android-review.linaro.org/plugins/gitiles/kernel/experimental/+/1e86240f3fd33f8052141778ad3dffe2c96184d7/include/linux/jffs.h
+0                   uleshort    0x1984      JFFS filesystem, little endian
 >2                  uleshort    !0xE001
 >>2                 uleshort    !0xE002
 >>>2                uleshort    !0x2003
@@ -221,9 +302,9 @@
 >>>>>>>2            uleshort    !0xE009     {invalid}
 >4                  lelong      0           {invalid}
 >4                  lelong      <0          {invalid}
->4                  lelong      x           {many}{jump:%d}
+#>4                  lelong      x           {many}{jump:%d}
 
-0                   ubeshort    0x1984      Old JFFS2 filesystem, big endian
+0                   ubeshort    0x1984      JFFS filesystem, big endian
 >2                  ubeshort    !0xE001
 >>2                 ubeshort    !0xE002
 >>>2                ubeshort    !0x2003
@@ -233,5 +314,5 @@
 >>>>>>>2            ubeshort    !0xE009     {invalid}
 >4                  belong      0           {invalid}
 >4                  belong      <0          {invalid}
->4                  belong      x           {many}{jump:%d}
+#>4                  belong      x           {many}{jump:%d}
 
