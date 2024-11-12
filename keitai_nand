@@ -12,7 +12,7 @@
 
 0       string   SSR200            Samsung SSR200 FTL
 
-0       string   \x91\x5A\x49\x2C  Samsung early XSR FTL
+0       string   \x91\x5A\x49\x2C  Samsung Early XSR FTL
 
 0       string   \x64              Samsung XSR1 FTL
 >12     string   !XSR1             {invalid}
@@ -23,7 +23,9 @@
 0       string   \x64              Samsung XSR3 FTL
 >16     string   !XSR3             {invalid}
 
-0       string   XSRPART           Samsung XSR2 FTL Partition
+0       string   XSR1d             Samsung XSR1d FTL
+
+0       string   XSRPART           Samsung XSR FTL Partition
 >0      string   x                 (%s)
 
 0       string   FSRPART           Samsung FSR FTL Partition
@@ -48,6 +50,12 @@
 >5      string   !\x07\x00\xEB     {invalid}
 
 0       string   ROFS0             ROFS filesystem
+
+0       string   \xAA\x73\xEE\x55\xDB\xBD\x5E\xE3       Qualcomm EFS2 filesystem
+0       string   \x87\x67\x85\x34\x59\x77\x34\x92       Qualcomm Factory Image FS filesystem (CEFS)
+0       string   \x01\x00\x00\x00\x65\x01\x00\x00FS     FactorFs.bin (SGX_eng.exe)
+0       string   \x01\x00\x00\x00\x01\x00\x00\x00System Rsrc.cnt (SGX_eng.exe)
+
 
 0               string   \xEB              FAT filesystem{strlen:8},
 >2              string   !\x90             {invalid}
@@ -136,7 +144,7 @@
 0       string   \xEb\x52\x90NTFS\x20\x20\x20\x20      NTFS filesystem
 0       string   NXSB                                  APFS filesystem
 
-0       string   \xFF\xD8\xFF\xE0\x00\x10JFIF\x00\x01\x02 TFS filesystem
+#0       string   \xFF\xD8\xFF\xE0\x00\x10JFIF\x00\x01\x02 TFS filesystem
 0       string   P\x00F\x00S\x00F\x00F\x00S\x00           Old ffs filesystem
 
 
@@ -150,29 +158,19 @@
 0       string   FAT16             FAT String (FAT16)
 0       string   FAT32             FAT String (FAT32)
 0       string   NECVOL            FAT String (NECVOL)
-0       string   MSWIN4.1          FAT String (MSWIN4.1)
-0       string   MSDOS5.0          FAT String (MSDOS5.0)
+#0       string   MSWIN4.1          FAT String (MSWIN4.1)
+#0       string   MSDOS5.0          FAT String (MSDOS5.0)
+0       string   MSWIN             FAT String
+>0      string   x                 (%s)
+0       string   MSDOS             FAT String
+>0      string   x                 (%s)
+0       string   DLDOS             FAT String
+>0      string   x                 (%s)
 0       string   NECVOL            FAT String (libFAT)
+0       string   GR-FILE           FAT String (GR-FILE)
 0       string   NO\x20NAME        FAT String (NO NAME)
 0       string   $RFS_LOGLO$       Samsung RFS Root File String ($RFS_LOGLO$)
 
-
-0       string   File\x20System    File System String
->0      string   x                 (%s)
-0       string   file\x20system    File System String
->0      string   x                 (%s)
-0       string   filesystem        File System String
->0      string   x                 (%s)
-0       string   Filesystem        File System String
->0      string   x                 (%s)
-
-0       string   NAND              NAND String
->0      string   x                 (%s)
-0       string   nand              NAND String
->0      string   x                 (%s)
-
-0       string   NOR\20            NOR String
->0      string   x                 (%s)
 
 0       string   FSR_STL           FSR_STL String
 >0      string   x                 (%s)
@@ -183,24 +181,9 @@
 0       string   FSR_1.            String
 >0      string   x                 (%s)
 
-0       string   nvm/              EFS1 (Embedded File System) String
->0      string   x                 (%s)
-
-0       string   SAMGUNG            String
->0      string   x                 (%s)
-1       string   amsung            String
->0      string   x                 (%s)
-
-0       string   UNISTORE          String
->0      string   x                 (%s)
-1       string   niStore          String
->0      string   x                 (%s)
-
-0       string   UniFS             String
->0      string   x                 (%s)
-
-0       string   PocketFS          String
->0      string   x                 (%s)
+5       string   nvm/              EFS1 (Embedded File System)
+>0      string   !\xFF\xFF\xFF\xFF      {invalid}
+>5      string   x                 (%s)
 
 0       string   PAFS              String
 >0      string   x                 (%s)
@@ -208,66 +191,8 @@
 0       string   IMRC              String
 >0      string   x                 (%s)
 
-0       string   TOSHIBA           String
->0      string   x                 (%s)
-1       string   oshiba            String
->0      string   x                 (%s)
-
-0       string   FUGUE             String
->0      string   x                 (%s)
-1       string   ugue              String
->0      string   x                 (%s)
-
-0       string   LINUX             String
->0      string   x                 (%s)
-1       string   inux              String
->0      string   x                 (%s)
-
-0       string   Hynix             String
->0      string   x                 (%s)
-
-0       string   MICRON            String
->0      string   x                 (%s)
-1       string   icron             String
->0      string   x                 (%s)
-
 0       string   NTFS              String
 >0      string   x                 (%s)
-
-0       string   OMAP              String
->0      string   x                 (%s)
-
-0       string   MOAP              String
->0      string   x                 (%s)
-
-0       string   ITRON             String
->0      string   x                 (%s)
-1       string   tron            String
->0      string   x                 (%s)
-
-0       string   NUCLEUS           String
->0      string   x                 (%s)
-1       string   ucleus            String
->0      string   x                 (%s)
-
-0       string   SYMBIAN           String
->0      string   x                 (%s)
-1       string   ymbian            String
->0      string   x                 (%s)
-
-0       string   XSR1d             String
->0      string   x                 (%s)
-
-0       string   EFS2              String (EFS2)
-0       string   EFSSuper          String (EFSSuper)
-0       string   \xAA\x73\xEE\x55\xDB\xBD\x5E\xE3 Kyocera EFS2 filesystem
-0       string   \x87\x67\x85\x34\x59\x77\x34\x92 Qualcomm Factory Image FS filesystem (CEFS)
-0       string   \x01\x00\x00\x00\x65\x01\x00\x00FS FactorFs.bin (SGX_eng.exe)
-0       string   \x01\x00\x00\x00\x01\x00\x00\x00System Rsrc.cnt (SGX_eng.exe)
-
-
-
-
 
 
 #################################
