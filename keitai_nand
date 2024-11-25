@@ -28,6 +28,12 @@
 0       string   XSRPART           Samsung XSR FTL Partition
 >0      string   x                 (%s)
 
+0       string   FSR_STL           Samsung FSR FTL STL,
+>9      ubyte    x                 version %d.
+>0xA    ubyte    x                 %d.
+>0xB    ubyte    x                 %d
+>0xC    string   !\xFF\xFF\xFF\xFF {invalid}
+
 0       string   FSRPART           Samsung FSR FTL Partition
 >0      string   x                 (%s)
 
@@ -74,13 +80,13 @@
 >9              string   !\x00             {strlen:1}
 >>9             string   x                 {string}"%s"
 >10             string   !\x00             {strlen:1}
->>10            string   x                 {string}"%s"
->11             uleshort x                 Sector Size: %d
+>>10            string   x                 {string}"%s",
+>11             uleshort x                 Sector Size: %d,
 >11             uleshort !512              
 >>11            uleshort !1024             
 >>>11           uleshort !2048             
 >>>>11          uleshort !4096             {invalid}
->13             ubyte    x                 SecPerClus: %d
+>13             ubyte    x                 SecPerClus: %d,
 >13             ubyte    !1                
 >>13            ubyte    !2                
 >>>13           ubyte    !4                
@@ -115,13 +121,13 @@
 >9              string   !\x00             {strlen:1}
 >>9             string   x                 {string}"%s"
 >10             string   !\x00             {strlen:1}
->>10            string   x                 {string}"%s"
->11             uleshort x                 Sector Size: %d
+>>10            string   x                 {string}"%s",
+>11             uleshort x                 Sector Size: %d,
 >11             uleshort !512              
 >>11            uleshort !1024             
 >>>11           uleshort !2048             
 >>>>11          uleshort !4096             {invalid}
->13             ubyte    x                 SecPerClus: %d
+>13             ubyte    x                 SecPerClus: %d,
 >13             ubyte    !1                
 >>13            ubyte    !2                
 >>>13           ubyte    !4                
@@ -144,7 +150,6 @@
 0       string   \xEb\x52\x90NTFS\x20\x20\x20\x20      NTFS filesystem
 0       string   NXSB                                  APFS filesystem
 
-#0       string   \xFF\xD8\xFF\xE0\x00\x10JFIF\x00\x01\x02 TFS filesystem
 0       string   P\x00F\x00S\x00F\x00F\x00S\x00           Old ffs filesystem
 
 
@@ -172,8 +177,8 @@
 0       string   $RFS_LOGLO$       Samsung RFS Root File String ($RFS_LOGLO$)
 
 
-0       string   FSR_STL           FSR_STL String
->0      string   x                 (%s)
+#0       string   FSR_STL           FSR_STL String
+#>0      string   x                 (%s)
 
 0       string   XSR_1.            String
 >0      string   x                 (%s)
