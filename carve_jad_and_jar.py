@@ -93,8 +93,8 @@ def carve_jad_and_jar(content, out_path):
             zip = zipfile.ZipFile(jar_out_path)
             zip.extractall("__temp")
             shutil.rmtree("__temp")
-        except zipfile.BadZipFile:
-            print("WAMN: the jar is corrupted.")
+        except Exception as e:
+            print(f"WAMN: the jar is corrupted. ({e})")
             
 
 
