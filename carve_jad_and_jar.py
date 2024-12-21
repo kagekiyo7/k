@@ -76,7 +76,7 @@ def carve_jad_and_jar(content, out_path):
             jar_size = 10000000
             print("WAMN: no 'MIDlet-Jar-Size'")
         
-        jar_start = content.find(b"PK\x03\x04", jad_end, jad_end+0x200)
+        jar_start = content.find(b"PK\x03\x04", jad_end, jad_end+0x2000)
         if jar_start == -1:
             print("WAMN: jar not found.")
             continue
@@ -95,7 +95,10 @@ def carve_jad_and_jar(content, out_path):
         except Exception as e:
             print(f"WAMN: the jar is corrupted. ({e})")
         finally:
-            shutil.rmtree("__temp")
+            try:
+                shutil.rmtree("__temp")
+            except:
+                pass
 
 
 
