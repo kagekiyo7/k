@@ -2,7 +2,39 @@
 ##            FTL              ##
 #################################
 
-# 0       string   \x00\xF0\xF0      00F0F0 FTL
+
+
+# Toshiba oob
+# ?? ?? ?? ?? ?? FF ?? ?? ?? ?? ?? ?? ?? FF FF FF
+
+
+# 705Px:	6F 01 FE FF A3 C5 FF FF 0D 65 FF FF FF FF FF FF
+#           6E 01 CE 03 A3 C5 80 00 0D 65 21 00 FF FF FF FF
+# 840P:		82 00 CE 03 A3 C5          65
+
+#           
+
+# 0xC      F0 F0 00 FF  D506i
+
+
+# D505i FF FF FF FF F2 ?? FF FF F2 ?? FF FF F2 ?? FF FF
+
+
+2		string	ny\x20Format		SO902i NOR,
+>0xC	ulelong	x					Value1: %d,
+>0x12	ulelong	x					Value2: %d
+
+
+4		string	\xA3\xC5			Softbank NOR FTL
+>0x9	string	!\x65				{invalid}
+>0xC	string	!\xFF\xFF\xFF\xFF	{invalid}
+
+2		string		CISF9			SoFFS (FUJITSU Sophisticated Flash File System)
+>8		string		!FTL100			{invalid}
+
+8		string		\xF0\xFF		00F0F0 Structure
+>0xD	string		!\x00\xF0\xF0	{invalid}
+
 
 0       string   \xB4\xB4          B4B4 FTL,
 >0x2    uleshort x                 Value1: %d
@@ -47,13 +79,12 @@
 >10     string   !\x55\xAA         {invalid}
 
 
-
 #################################
 ##        File System          ##
 #################################
 
 0       string   \x7E\x00\x00\xEA  EPOC32 ROM
->5      string   !\x07\x00\xEB     {invalid}
+>6      string   !\x00\xEB     {invalid}
 
 0       string   ROFS0             ROFS filesystem
 
@@ -158,6 +189,7 @@
 #################################
 
 0       string   MIDlet-Name:      JAD's App Name String (MIDlet-Name)
+0       regex    AppName\x20?=     JAM's App Name String (AppName)
 
 0       string   FAT12             FAT String (FAT12)
 0       string   FAT16             FAT String (FAT16)
