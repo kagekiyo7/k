@@ -2,12 +2,14 @@
 ##            FTL              ##
 #################################
 
-# Toshiba oob
+# Toshiba oob index:13-14 big every 0x200
 # ?? ?? ?? ?? ?? FF ?? ?? ?? ?? ?? ?? ?? FF FF FF
 
 # D505i/D505iS
 # FF FF FF FF F2 ?? FF FF F2 ?? FF FF F2 ?? FF FF
 
+0xA     string   M4                    M4 structure
+>0x19   string   !\x55\x55\x55\xFF\xFF {invalid}
 
 0xC     string   \xF0\xF0\x00\xFF  SH900i FTL Footer
 >1      string   !\x00\x00         {invalid}
