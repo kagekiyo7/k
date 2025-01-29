@@ -48,10 +48,11 @@ def main():
 
             new_adf_content, new_sp_content, new_scr_contents, jar_name = convert(adf_content, jar_content, sp_content)
 
-            new_jam_file_path = os.path.join(output_folder, f'{jar_name}.jam')
+            while os.path.exists(new_jam_file_path := os.path.join(output_folder, f'{jar_name}.jam')):
+                jar_name += "_"
+
             new_jar_file_path = os.path.join(output_folder, f'{jar_name}.jar')
             new_sp_file_path = os.path.join(output_folder, f'{jar_name}.sp')
-            
                 
             with open(new_jam_file_path, 'wb') as adf_file:
                 adf_file.write(new_adf_content)
