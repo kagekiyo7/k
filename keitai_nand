@@ -11,68 +11,68 @@
 0xA     string   M4                    M4 structure
 >0x19   string   !\x55\x55\x55\xFF\xFF {invalid}
 
-0xC     string   \xF0\xF0\x00\xFF  SH900i FTL Footer
->1      string   !\x00\x00         {invalid}
->5      string   !\x00\x00         {invalid}
+0xC     string   \xF0\xF0\x00\xFF      SH900i FTL Footer
+>1      string   !\x00\x00             {invalid}
+>5      string   !\x00\x00             {invalid}
 
-2       string  ny\x20Format       SO902i NOR FTL,
->0xC    ulelong x                  Value1: %d,
->0x12   ulelong x                  Value2: %d
+2       string   ny\x20Format          SO902i NOR FTL,
+>0xC    ulelong  x                     Value1: %d,
+>0x12   ulelong  x                     Value2: %d
 
-4       string  \xA3\xC5           Softbank NOR FTL
->0x9    string  !\x65              {invalid}
->0xC    string  !\xFF\xFF\xFF\xFF  {invalid}
+4       string   \xA3\xC5              Softbank NOR FS
+>0x9    string   !\x65                 {invalid}
+>0xC    string   !\xFF\xFF\xFF\xFF     {invalid}
 
-0       string   \x13\x03CIS       Fujitsu SoFFS,
->2      string   x                 (%s)
->8      string   !FTL100           {invalid}
+0       string   \x13\x03CIS           Fujitsu SoFFS,
+>2      string   x                     (%s)
+>8      string   !FTL100               {invalid}
 
-8       string   \xF0\xFF          00F0F0 Structure
->0xD    string   !\x00\xF0\xF0     {invalid}
+8       string   \xF0\xFF              00F0F0 Structure
+>0xD    string   !\x00\xF0\xF0         {invalid}
 
 
-0       string   \xB4\xB4          B4B4 FTL Data Metablock,
->0xC    string   !\xFF\xFF\xFF\xFF {invalid}
+0       string   \xB4\xB4              B4B4 FTL Data Metablock,
+>0xC    string   !\xFF\xFF\xFF\xFF     {invalid}
 >0x10   string   !\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF {invalid}
->0x2    uleshort x                 Value1: %d
+>0x2    uleshort x                     Value1: %d
 
-0       string   SSR200            Samsung SSR200 FTL
+0       string   SSR200                Samsung SSR200 FTL
 
-0       string   \x91\x5A\x49\x2C  Samsung Early XSR FTL
+0       string   \x91\x5A\x49\x2C      Samsung Early XSR FTL
 
-0       string   \x64              Samsung XSR1 FTL
->12     string   !XSR1             {invalid}
+0       string   \x64                  Samsung XSR1 FTL
+>12     string   !XSR1                 {invalid}
 
-0       string   \x64              Samsung XSR2 FTL
->12     string   !XSR2             {invalid}
+0       string   \x64                  Samsung XSR2 FTL
+>12     string   !XSR2                 {invalid}
 
-0       string   \x64              Samsung XSR3 FTL
->16     string   !XSR3             {invalid}
+0       string   \x64                  Samsung XSR3 FTL
+>16     string   !XSR3                 {invalid}
 
-0       string   XSR1d             Samsung XSR1d FTL
+0       string   XSR1d                 Samsung XSR1d FTL
 
-0       string   XSRPART           Samsung XSR FTL Partition
->0      string   x                 (%s)
+0       string   XSRPART               Samsung XSR FTL Partition
+>0      string   x                     (%s)
 
-0       string   FSR_STL           Samsung FSR FTL STL,
->9      ubyte    x                 version %d.
->0xA    ubyte    x                 %d.
->0xB    ubyte    x                 %d
->9      string   \x01\x01\x01      (FSR_F)
->9      string   \x01\x02\x01      (FSR_ll)
->0xC    string   !\xFF\xFF\xFF\xFF {invalid}
+0       string   FSR_STL               Samsung FSR FTL STL,
+>9      ubyte    x                     version %d.
+>0xA    ubyte    x                     %d.
+>0xB    ubyte    x                     %d
+>9      string   \x01\x01\x01          (FSR_F)
+>9      string   \x01\x02\x01          (FSR_ll)
+>0xC    string   !\xFF\xFF\xFF\xFF     {invalid}
 
-0       string   FSRPART           Samsung FSR FTL Partition
->0      string   x                 (%s)
+0       string   FSRPART               Samsung FSR FTL Partition
+>0      string   x                     (%s)
 
-0       string   \xCC\xDDDL_FS             Datalight FlashFX FTL{strlen:4},
->0x7    string   x                         version: {string}%s
->0xB    string   !\xFF\xFF\xFF\xFF\xFF     {invalid}
+0       string   \xCC\xDDDL_FS         Datalight FlashFX FTL{strlen:4},
+>0x7    string   x                     version: {string}%s
+>0xB    string   !\xFF\xFF\xFF\xFF\xFF {invalid}
 
-0       string   \x04\x19\xFF\xFF  Fugue FAT FTL,
->4      ubelong  x                 block generation %s,
->8      ubeshort x                 block index %s
->10     string   !\x55\xAA         {invalid}
+0       string   \x04\x19\xFF\xFF      Fugue FAT FTL,
+>4      ubelong  x                     block generation %s,
+>8      ubeshort x                     block index %s
+>10     string   !\x55\xAA             {invalid}
 
 
 #################################
@@ -80,7 +80,7 @@
 #################################
 
 0       string   \x7E\x00\x00\xEA  EPOC32 ROM
->6      string   !\x00\xEB     {invalid}
+>6      string   !\x00\xEB         {invalid}
 
 0       string   ROFS0             ROFS filesystem
 
@@ -90,8 +90,7 @@
 0       string   \x01\x00\x00\x00\x01\x00\x00\x00System Rsrc.cnt (SGX_eng.exe)
 
 
-0               string   \xEB              FAT filesystem{strlen:8},
->2              string   !\x90             {invalid}
+0x1FE           string   \x55\xAA          FAT filesystem BPB,
 >3              string   !\x00             {strlen:1}
 >>3             string   x                 OEMName: {string}"%s"
 >4              string   !\x00             {strlen:1}
@@ -106,71 +105,69 @@
 >>8             string   x                 {string}"%s"
 >9              string   !\x00             {strlen:1}
 >>9             string   x                 {string}"%s"
->10             string   !\x00             {strlen:1}
->>10            string   x                 {string}"%s",
->11             uleshort x                 Sector Size: %d,
->11             uleshort !512              
->>11            uleshort !1024             
->>>11           uleshort !2048             
->>>>11          uleshort !4096             {invalid}
->13             ubyte    x                 SecPerClus: %d,
->13             ubyte    !1                
->>13            ubyte    !2                
->>>13           ubyte    !4                
->>>>13          ubyte    !8                
->>>>>13         ubyte    !16               
->>>>>>13        ubyte    !32               
->>>>>>>13       ubyte    !64               
->>>>>>>>13      ubyte    !128              {invalid}
->14             uleshort x                 RsvdSecCnt: %d,
->14             uleshort 0                 {invalid}
+>0xA            string   !\x00             {strlen:1}
+>>0xA           string   x                 {string}"%s",
+>0xB            uleshort x                 Sector Size: %d,
+>0xB            uleshort !512              
+>>0xB           uleshort !1024             
+>>>0xB          uleshort !2048             
+>>>>0xB         uleshort !4096             {invalid}
+>0xD            ubyte    x                 SecPerClus: %d,
+>0xD            ubyte    !1                
+>>0xD           ubyte    !2                
+>>>0xD          ubyte    !4                
+>>>>0xD         ubyte    !8                
+>>>>>0xD        ubyte    !16               
+>>>>>>0xD       ubyte    !32               
+>>>>>>>0xD      ubyte    !64               
+>>>>>>>>0xD     ubyte    !128              {invalid}
+>0xE            uleshort x                 RsvdSecCnt: %d,
+>0xE            uleshort 0                 {invalid}
+>0x15           ubyte    !0xF0             
+>>0x15          ubyte    !0xF8             
+>>>0x15         ubyte    !0xF9             
+>>>>0x15        ubyte    !0xFA             
+>>>>>0x15       ubyte    !0xFB             
+>>>>>>0x15      ubyte    !0xFC             
+>>>>>>>0x15     ubyte    !0xFD             
+>>>>>>>>0x15    ubyte    !0xFE             
+>>>>>>>>>0x15   ubyte    !0xFF             {invalid}
 # FAT12/16
->17             uleshort !0                Version: FAT12/16{strlen:8},
->>54            string   x                 FilSysType: {string}"%s"
+>0x11            uleshort !0                Type: FAT12/16,
+>>0x36           string   !\x00             {strlen:1}
+>>>0x36          string   x                 {string}FilSysType: "%s"
+>>0x37           string   !\x00             {strlen:1}
+>>>0x37          string   x                 {string}"%s"
+>>0x38           string   !\x00             {strlen:1}
+>>>0x38          string   x                 {string}"%s"
+>>0x39           string   !\x00             {strlen:1}
+>>>0x39          string   x                 {string}"%s"
+>>0x3A           string   !\x00             {strlen:1}
+>>>0x3A          string   x                 {string}"%s"
+>>0x3B           string   !\x00             {strlen:1}
+>>>0x3B          string   x                 {string}"%s"
+>>0x3C           string   !\x00             {strlen:1}
+>>>0x3C          string   x                 {string}"%s"
+>>0x3D           string   !\x00             {strlen:1}
+>>>0x3D          string   x                 {string}"%s"
 # FAT32
->17             uleshort 0                 Version: FAT32{strlen:8},
->>82            string   x                 FilSysType: {string}"%s"
-
-
-0               string   \xE9              FAT filesystem{strlen:8},
->3              string   !\x00             {strlen:1}
->>3             string   x                 OEMName: {string}"%s"
->4              string   !\x00             {strlen:1}
->>4             string   x                 {string}"%s"
->5              string   !\x00             {strlen:1}
->>5             string   x                 {string}"%s"
->6              string   !\x00             {strlen:1}
->>6             string   x                 {string}"%s"
->7              string   !\x00             {strlen:1}
->>7             string   x                 {string}"%s"
->8              string   !\x00             {strlen:1}
->>8             string   x                 {string}"%s"
->9              string   !\x00             {strlen:1}
->>9             string   x                 {string}"%s"
->10             string   !\x00             {strlen:1}
->>10            string   x                 {string}"%s",
->11             uleshort x                 Sector Size: %d,
->11             uleshort !512              
->>11            uleshort !1024             
->>>11           uleshort !2048             
->>>>11          uleshort !4096             {invalid}
->13             ubyte    x                 SecPerClus: %d,
->13             ubyte    !1                
->>13            ubyte    !2                
->>>13           ubyte    !4                
->>>>13          ubyte    !8                
->>>>>13         ubyte    !16               
->>>>>>13        ubyte    !32               
->>>>>>>13       ubyte    !64               
->>>>>>>>13      ubyte    !128              {invalid}
->14             uleshort x                 RsvdSecCnt: %d,
->14             uleshort 0                 {invalid}
-# FAT12/16
->17             uleshort !0                Version: FAT12/16{strlen:8},
->>54            string   x                 FilSysType: {string}"%s"
-# FAT32
->17             uleshort 0                 Version: FAT32{strlen:8},
->>82            string   x                 FilSysType: {string}"%s"
+>0x11            uleshort 0                 Type: FAT32,
+>>0x52           string   !\x00             {strlen:1}
+>>>0x52          string   x                 {string}FilSysType: "%s"
+>>0x53           string   !\x00             {strlen:1}
+>>>0x53          string   x                 {string}"%s"
+>>0x54           string   !\x00             {strlen:1}
+>>>0x54          string   x                 {string}"%s"
+>>0x55           string   !\x00             {strlen:1}
+>>>0x55          string   x                 {string}"%s"
+>>0x56           string   !\x00             {strlen:1}
+>>>0x56          string   x                 {string}"%s"
+>>0x57           string   !\x00             {strlen:1}
+>>>0x57          string   x                 {string}"%s"
+>>0x58           string   !\x00             {strlen:1}
+>>>0x58          string   x                 {string}"%s"
+>>0x59           string   !\x00             {strlen:1}
+>>>0x59          string   x                 {string}"%s"
 
 
 3       string   \x03\x00\x05\x00\x05\xD2\xFF\xFF\x00  CG2 Flex
