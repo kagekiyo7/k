@@ -26,9 +26,9 @@ def main(dump_content, output_dir):
         kjx_name_len = temp_kjx[4]
         
         try:
-            kjx_name = temp_kjx[5:5+kjx_name_len].decode("ascii")
+            kjx_name = temp_kjx[5:5+kjx_name_len].decode("cp932")
             kjx_name = re.sub(r"\.kjx$", "", kjx_name)
-            print(f"\n{hex(offset)}: '{kjx_name}'")
+            print(f"\nFound: '{kjx_name}.kjx' (start: {hex(offset)}, ", end="")
         except Exception as e:
             #print(e)
             continue
@@ -43,10 +43,12 @@ def main(dump_content, output_dir):
             jad_str = jad_content.decode("utf-8")
         except:
             try:
-                jad_str = jad_content.decode("shift-jis")
+                jad_str = jad_content.decode("cp932")
             except:
                 print(f"Failed: jad decoding")
                 continue
+        
+        print("AppName: " + re.search(r"MIDlet-Name: ([^\r\n]+)", jad_str)[1] + ")")
         
         try:
             jar_len = int(re.search(r"MIDlet-Jar-Size: (\d+)", jad_str)[1])
