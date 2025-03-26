@@ -2,20 +2,37 @@
 ##            FTL              ##
 #################################
 
-# Toshiba oob index:13-14 big every 0x200
+
+# V601SH
+# 82 00 00 11 5D 00
+
+# SH/D904i OOB
+# ?? B8 ?? C0 FF FF FF ?? ?? ?? ?? ?? ?? ?? FF FF
+
+# Toshiba OOB, index: 13-14 (big) every 0x200
 # ?? ?? ?? ?? ?? FF ?? ?? ?? ?? ?? ?? ?? FF FF FF
+
+# New Toshiba OOB
+# 52 74 87 25 76 A7 54 9D D8 CF
 
 # D505i/D505iS
 # FF FF FF FF F2 ?? FF FF F2 ?? FF FF F2 ?? FF FF
 
-0xA     string   M4                    M4 structure
+# softbank sharp
+# 08 02 00 00 01 00 00 00 00 01 FE FF FE FF FE FF
+
+0       string   \x44\x41\x54\x41\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00 D900i Structure
+
+0       string   \x0F\xF0\xFF\xFF\x33\xCC\xFF\xFF\xFF V501T FTL
+
+0xA     string   M4                    M4 Structure
 >0x19   string   !\x55\x55\x55\xFF\xFF {invalid}
 
 0xC     string   \xF0\xF0\x00\xFF      SH900i FTL Footer
 >1      string   !\x00\x00             {invalid}
 >5      string   !\x00\x00             {invalid}
 
-2       string   ny\x20Format          SO902i NOR FTL,
+2       string   ny\x20Format          Sony Ericsson Custom FS,
 >0xC    ulelong  x                     Value1: %d,
 >0x12   ulelong  x                     Value2: %d
 
@@ -83,6 +100,10 @@
 >6      string   !\x00\xEB         {invalid}
 
 0       string   ROFS0             ROFS filesystem
+0       string   ROFS1             ROFS filesystem
+0       string   ROFS2             ROFS filesystem
+0       string   ROFS3             ROFS filesystem
+0       string   ROFS4             ROFS filesystem
 
 0       string   \xAA\x73\xEE\x55\xDB\xBD\x5E\xE3       Qualcomm EFS2 filesystem
 0       string   \x87\x67\x85\x34\x59\x77\x34\x92       Qualcomm Factory Image FS filesystem (CEFS)
