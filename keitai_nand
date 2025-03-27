@@ -15,8 +15,6 @@
 # D505i/D505iS
 # FF FF FF FF F2 ?? FF FF F2 ?? FF FF F2 ?? FF FF
 
-# softbank sharp
-# 08 02 00 00 01 00 00 00 00 01 FE FF FE FF FE FF
 
 
 
@@ -37,11 +35,9 @@
 >1      string   !\x00\x00             {invalid}
 >5      string   !\x00\x00             {invalid}
 
-2       string   ny\x20Format          Sony Ericsson Custom FS,
->0xC    ulelong  x                     Value1: %d,
->0x12   ulelong  x                     Value2: %d
+2       string   ny\x20Format          Sony Ericsson Custom FS
 
-4       string   \xA3\xC5              Softbank NOR FS
+4       string   \xA3\xC5              Softbank C5A3 FS
 >0x9    string   !\x65                 {invalid}
 >0xC    string   !\xFF\xFF\xFF\xFF     {invalid}
 
