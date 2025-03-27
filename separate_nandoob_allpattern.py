@@ -1,23 +1,27 @@
 import sys
 import os
 
-structures = [[512, 16], [1024, 32], [2048, 64], [4096, 128], [8192, 256]]
-
-
+layouts = [[512, 16], [1024, 32], [2048, 64], [4096, 128], [8192, 256]]
 
 def main():
-    for structure in structures:
-        nand_pagesize = structure[0]
-        oob_pagesize = structure[1]
+    nand_path = sys.argv[1]
+    print(f"Input: {nand_path}")
         
-        nand = sys.argv[1]
-        nandname = os.path.splitext(os.path.basename(nand))[0]
-        out_nand = os.path.join(os.path.dirname(nand), f"separated_{nandname}_{str(nand_pagesize)}.bin")
-        out_oob = os.path.join(os.path.dirname(nand), f"separated_{nandname}_{str(nand_pagesize)}.oob")
-        print(f"nand: {nand}")
+    for layout in layouts:
+        nand_pagesize = layout[0]
+        oob_pagesize = layout[1]
         
-        with open(nand, "rb") as in_nandf:
-            #if len(in_nandf.read()) % NAND_BYTE_STEP+OOB_BYTE_STEP != 0: raise ValueError("The nand size is not appropriate.")
+        nandname = os.path.splitext(os.path.basename(nand_path))[0]
+        out_nand = os.path.join(os.path.dirname(nand_path), f"separated_{nandname}_{str(nand_pagesize)}.bin")
+        out_oob = os.path.join(os.path.dirname(nand_path), f"separated_{nandname}_{str(nand_pagesize)}.oob")
+        print(f"\nStarted separate {nand_pagesize}/{oob_pagesize}")
+        
+        with open(nand_path, "rb") as in_nandf:
+            in_size = os.path.getsize(nand_path)
+            if in_size % (nand_pagesize+oob_pagesize) != 0:
+                print("The nand/oob size is not appropriate.")
+                continue
+            
             with open(out_nand, "wb") as out_nandf:
                 with open(out_oob, "wb") as out_oobf:
                     while True:
@@ -27,7 +31,7 @@ def main():
                         if not oob_temp: break
                         out_nandf.write(nand_temp)
                         out_oobf.write(oob_temp)
-                    print("succeed")
+                    print(f"Succeed => {out_nand},\n{out_oob}")
 
 
 if __name__ == "__main__":
