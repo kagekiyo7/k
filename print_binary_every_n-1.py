@@ -37,7 +37,7 @@ def main(binary):
     print("Offset(h)  00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F   Decode")
     binary_size = len(binary)
     
-    for offset in range(0, binary_size, EVERY):
+    for offset in range(EVERY, binary_size, EVERY):
         start = offset-0x10
         end = min(start+0x10, binary_size)
         
