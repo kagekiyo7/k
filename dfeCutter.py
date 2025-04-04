@@ -19,7 +19,7 @@ def ditect_start_address(file_path, possible_start_address_list, magics):
     return None
 
 def main(dfe_dir, possible_start_address_list):
-    output_dir = os.path.join(os.path.dirname(dfe_dir), "output")
+    output_dir = os.path.join(os.path.dirname(dfe_dir), "output_dfe")
     
     input_paths = []
     for root, _, files in os.walk(dfe_dir):
@@ -62,11 +62,11 @@ def main(dfe_dir, possible_start_address_list):
         
         with open(input_path, "rb") as inf:
             content = inf.read()
-            
-            if len(content) < start_address:
-                print(f"Ignored: {file_name} (Symbolic Link)")
+                
+            if len(content) <= start_address:
+                print(f"Ignored: {file_name} (Empty or Symbolic Link)")
                 continue
-                    
+            
             try:
                 text = content.decode("utf-8")
                 if text[0] == "/":
@@ -74,6 +74,7 @@ def main(dfe_dir, possible_start_address_list):
                     continue
             except:
                 pass
+            
             
             while True:
                 if not os.path.isfile(output_path): break
