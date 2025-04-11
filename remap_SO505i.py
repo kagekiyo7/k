@@ -15,36 +15,36 @@ def main():
     assert (len(oob) // 16) * 512 == len(data)
 
 
-    data_page_size = 0x200 * 0x20
-    oob_page_size = 0x10 * 0x20
+    data_block_size = 0x200 * 0x20
+    oob_block_size = 0x10 * 0x20
     
     
     chunk_dicts = []
     matched = set()
-    for page in range(len(oob)//oob_page_size):
-        data_page = data[page * data_page_size : (page+1) * data_page_size]
-        oob_page = oob[page * oob_page_size : (page+1) * oob_page_size]
+    for block in range(len(oob)//oob_block_size):
+        data_block = data[block * data_block_size : (block+1) * data_block_size]
+        oob_block = oob[block * oob_block_size : (block+1) * oob_block_size]
 
-        if oob_page[:oob_page_size] == b"\xFF" * oob_page_size:
+        if oob_block == b"\xFF" * oob_block_size:
             continue
 
-        page_ind = int.from_bytes(oob_page[0x6:0x8], "big") & 0x0FFF
-        if page_ind in matched:
-            print(f"WARN: duplicate page index (Page index: {hex(page_ind)}, OOB offset: {hex(page * 0x10)})")
+        block_id = int.from_bytes(oob_block[0x6:0x8], "big") & 0x0FFF
+        if block_id in matched:
+            print(f"WARN: duplicate block id (Block id: {hex(block_id)}, OOB offset: {hex(block * 0x10)})")
         else:
             temp_fat = bytearray()
-            for sector in range(oob_page_size // 0x10):
-                temp_oob = oob_page[sector * 0x10 : (sector+1) * 0x10]
+            for sector in range(oob_block_size // 0x10):
+                temp_oob = oob_block[sector * 0x10 : (sector+1) * 0x10]
                 if temp_oob[0x8:0xB] != b"\xFF" * 3 or temp_oob[0xC:0x10] != b"\xFF" * 3:
-                    temp_fat += data_page[sector * 0x200 : (sector+1) * 0x200]
-            chunk_dicts.append({"fat": temp_fat, "page_ind": page_ind})
-        matched.add(page_ind)
+                    temp_fat += data_block[sector * 0x200 : (sector+1) * 0x200]
+            chunk_dicts.append({"fat": temp_fat, "block_id": block_id})
+        matched.add(block_id)
         
 
     
     fat = bytearray()
-    for chunk_dict in sorted(chunk_dicts, key=lambda x:x["page_ind"]):
-        #print(hex(chunk_dict["page_ind"]))
+    for chunk_dict in sorted(chunk_dicts, key=lambda x:x["block_id"]):
+        #print(hex(chunk_dict["block_id"]))
         fat += chunk_dict["fat"]
             
     with open(output, "wb") as outf:
