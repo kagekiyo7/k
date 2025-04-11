@@ -33,7 +33,7 @@ def main():
             print(f"WARN: duplicate page index (Page index: {hex(page_ind)}, OOB offset: {hex(page * 0x10)})")
         else:
             temp_fat = bytearray()
-            for block in range(len(oob_page) // 0x10):
+            for block in range(oob_page_size // 0x10):
                 temp_oob = oob_page[block * 0x10 : (block+1) * 0x10]
                 if temp_oob[0x8:0xB] != b"\xFF" * 3 or temp_oob[0xC:0x10] != b"\xFF" * 3:
                     temp_fat += data_page[block * 0x200 : (block+1) * 0x200]
