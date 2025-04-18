@@ -82,8 +82,8 @@ for i in range(500):
             jam_dict["AppVer"] = file.read().decode("cp932")
 
     spsizes = []
-    for i in range(15):
-        filepath = os.path.join(fjjam_data_dir, f"{num}_spSize{i}.dat")
+    for j in range(15):
+        filepath = os.path.join(fjjam_data_dir, f"{num}_spSize{j}.dat")
         if os.path.isfile(filepath):
             with open(filepath, "rb") as file:
                 spsize = int.from_bytes(file.read(), "little")
