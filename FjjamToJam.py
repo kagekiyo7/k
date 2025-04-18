@@ -35,7 +35,6 @@ for i in range(500):
     print(f"SP Dir: {sp_dir}") # filename: sp0, sp1...
 
     filename = re.sub(r"\.jar", "", os.path.basename(jar_filename), flags=re.IGNORECASE)
-    print(os.path.basename(filename))
 
     # Required
     filepath = os.path.join(fjjam_data_dir, f"{num}_appName.dat")
@@ -51,7 +50,7 @@ for i in range(500):
     filepath = os.path.join(fjjam_data_dir, f"{num}_jar_Size.dat")
     if os.path.isfile(filepath):
         with open(filepath, "rb") as file:
-            jam_dict["AppSize"] = str(int.from_bytes(file.read(), "little"))
+            jam_dict["AppSize"] = str(int.from_bytes(file.read()[0:4], "little"))
 
     filepath = os.path.join(fjjam_data_dir, f"{num}_appClass.dat")
     if os.path.isfile(filepath):
@@ -61,10 +60,14 @@ for i in range(500):
     filepath = os.path.join(fjjam_data_dir, f"{num}_lastModifiedTime.dat")
     if os.path.isfile(filepath):
         with open(filepath, "rb") as file:
-            timestamp = int.from_bytes(file.read()[0:4], "big")
-            dt = datetime.datetime.fromtimestamp(timestamp, datetime.UTC)
-            formatted_date = dt.strftime("%a, %d %b %Y %H:%M:%S")
-            jam_dict["LastModified"] = formatted_date
+            datedata = file.read()[0:4]
+            if datedata == b"\x00\x00\x00\x00":
+                jam_dict["LastModified"] = "Mon, 01 Jun 2000 00:00:00"
+            else:
+                timestamp = int.from_bytes(datedata, "big")
+                dt = datetime.datetime.fromtimestamp(timestamp, datetime.UTC)
+                formatted_date = dt.strftime("%a, %d %b %Y %H:%M:%S")
+                jam_dict["LastModified"] = formatted_date
 
 
     required_keys = ["AppName", "PackageURL", "AppSize", "AppClass", "LastModified"]
@@ -86,8 +89,8 @@ for i in range(500):
         filepath = os.path.join(fjjam_data_dir, f"{num}_spSize{j}.dat")
         if os.path.isfile(filepath):
             with open(filepath, "rb") as file:
-                spsize = int.from_bytes(file.read(), "little")
-                if spsize in [0, 0xFF_FF_FF_FF]:
+                spsize = int.from_bytes(file.read()[0:4], "little")
+                if spsize  == 0xFF_FF_FF_FF:
                     break
                 else:
                     spsizes.append(str(spsize))
@@ -103,8 +106,8 @@ for i in range(500):
     widthpath = os.path.join(fjjam_data_dir, f"{num}_drawAreaWidth.dat")
     if os.path.isfile(heightpath) and os.path.isfile(widthpath):
         with open(heightpath, "rb") as heightfile, open(widthpath, "rb") as widthfile:
-            height = str(int.from_bytes(heightfile.read(), "little"))
-            width = str(int.from_bytes(widthfile.read(), "little"))
+            height = str(int.from_bytes(heightfile.read()[0:4], "little"))
+            width = str(int.from_bytes(widthfile.read()[0:4], "little"))
             if "0" not in [height, width]:
                 jam_dict["DrawArea"] = f"{height}x{width}"
 
@@ -178,7 +181,6 @@ for i in range(500):
 
     print(jam_dict)
 
-    print(os.path.join(outdir, f"{filename}.jam"))
     with open(os.path.join(outdir, f"{filename}.jam"), "w", encoding="cp932") as file:
         file.write("\n".join(f"{jam[0]} = {jam[1]}" for jam in jam_dict.items()) + "\n")
 
