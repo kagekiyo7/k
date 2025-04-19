@@ -38,15 +38,17 @@ def main(dfe_dir, possible_start_address_list):
             start_address = detect_start_address(input_path, possible_start_address_list, [b"GIF89a", b"GIF87a"])
             
         if input_path.lower().endswith(".jpg") or input_path.lower().endswith(".jpeg"):
-            start_address = detect_start_address(input_path,
-                                possible_start_address_list,
-                                [b"\xFF\xD8\xFF\xDB", 
-                                    b"\xFF\xD8\xFF\xE0\x00\x10\x4A\x46\x49\x46\x00\x01",
-                                    b"\xFF\xD8\xFF\xEE",
-                                    b"\xFF\xD8\xFF\xE1",
-                                    b"\xFF\xD8\xFF\xE0"
-                                ]
-                            )
+            start_address = detect_start_address(
+                input_path,
+                possible_start_address_list,
+                [
+                    b"\xFF\xD8\xFF\xDB", 
+                    b"\xFF\xD8\xFF\xE0\x00\x10\x4A\x46\x49\x46\x00\x01",
+                    b"\xFF\xD8\xFF\xEE",
+                    b"\xFF\xD8\xFF\xE1",
+                    b"\xFF\xD8\xFF\xE0"
+                ]
+            )
     
         if input_path.lower().endswith(".mld"):
             start_address = detect_start_address(input_path, possible_start_address_list, [b"melo"])
