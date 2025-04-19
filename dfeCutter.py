@@ -29,37 +29,40 @@ def main(dfe_dir, possible_start_address_list):
     
     print("Looking for the start address...")
     start_address = None
+    
+    
     for input_path in input_paths:
-        if not input_path.lower().endswith(".gif"): continue
-        start_address = detect_start_address(input_path, possible_start_address_list, [b"GIF89a", b"GIF87a"])
         if start_address != None: break
-    
-    for input_path in input_paths:
-        if not (input_path.lower().endswith(".jpg") or input_path.lower().endswith(".jpeg")): continue
-        start_address = detect_start_address(input_path, possible_start_address_list, [b"\xFF\xD8\xFF\xDB", b"\xFF\xD8\xFF\xE0\x00\x10\x4A\x46\x49\x46\x00\x01", b"\xFF\xD8\xFF\xEE", b"\xFF\xD8\xFF\xE1", b"\xFF\xD8\xFF\xE0"])
-        if start_address != None: break 
-    
-    for input_path in input_paths:
-        if not input_path.lower().endswith(".mld"): continue
-        start_address = detect_start_address(input_path, possible_start_address_list, [b"melo"])
-        if start_address != None: break 
-    
-    for input_path in input_paths:
-        if not input_path.lower().endswith(".cfd"): continue
-        start_address = detect_start_address(input_path, possible_start_address_list, [b"CFD"])
-        if start_address != None: break 
         
-    for input_path in input_paths:
-        if not input_path.lower().endswith(".swf"): continue
-        start_address = detect_start_address(input_path, possible_start_address_list, [b"FWS", b"CWS"])
-        if start_address != None: break 
+        if input_path.lower().endswith(".gif"):
+            start_address = detect_start_address(input_path, possible_start_address_list, [b"GIF89a", b"GIF87a"])
+            
+        if input_path.lower().endswith(".jpg") or input_path.lower().endswith(".jpeg"):
+            start_address = detect_start_address(input_path,
+                                possible_start_address_list,
+                                [b"\xFF\xD8\xFF\xDB", 
+                                    b"\xFF\xD8\xFF\xE0\x00\x10\x4A\x46\x49\x46\x00\x01",
+                                    b"\xFF\xD8\xFF\xEE",
+                                    b"\xFF\xD8\xFF\xE1",
+                                    b"\xFF\xD8\xFF\xE0"
+                                ]
+                            )
+    
+        if input_path.lower().endswith(".mld"):
+            start_address = detect_start_address(input_path, possible_start_address_list, [b"melo"])
+    
+        if input_path.lower().endswith(".cfd"):
+            start_address = detect_start_address(input_path, possible_start_address_list, [b"CFD"])
+        
+        if input_path.lower().endswith(".swf"):
+            start_address = detect_start_address(input_path, possible_start_address_list, [b"FWS", b"CWS"])
     
     if start_address == None: raise Exception("Failed: The start address could not be found.")
     print(f"Start Address: {hex(start_address)} ({input_path})")
     
+    os.makedirs(output_dir, exist_ok=True)
     for input_path in input_paths:
         file_name = os.path.basename(input_path)
-        os.makedirs(output_dir, exist_ok=True)
         output_path = os.path.join(output_dir, file_name)
         
         with open(input_path, "rb") as inf:
