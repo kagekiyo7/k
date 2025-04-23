@@ -12,24 +12,33 @@
 # New Toshiba OOB
 # 52 74 87 25 76 A7 54 9D D8 CF
 
-# D505i/D505iS
-# FF FF FF FF F2 ?? FF FF F2 ?? FF FF F2 ?? FF FF
+# SO505i OOB
+# FF FF FF FF FF FF XX XX FF FF FF XX XX FF FF FF 
+# 0x200
 
-
-
+# F900i OOB
+# XX XX XX FF FF FF 55 55 XX XX YY YY FF FF FF FF 
+# 0x200
 
 
 #################################
 ##            FTL              ##
 #################################
 
+0x0     string   \xFF\xFF\xFF\xFF\xF2  D505i/D505iS Structure
+>6      string   !\xFF\xFF\xF2         {invalid}
+>0xA    string   !\xFF\xFF\xF2         {invalid}
+>0xE    string   !\xFF\xFF             {invalid}
+
+
+0x19    string   \x55\x55\x55\xFF\xFF     M4 Structure
+>0x10   string   \x00\xFF\xFF\xFF\xFF\xFF {strlen:2}
+>0xA    string   x                        {string}(%s)
+
 
 0       string   \x44\x41\x54\x41\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00 D900i Structure
 
 0       string   \x0F\xF0\xFF\xFF\x33\xCC\xFF\xFF\xFF V501T FTL
-
-0xA     string   M4                    M4 Structure
->0x19   string   !\x55\x55\x55\xFF\xFF {invalid}
 
 0xC     string   \xF0\xF0\x00\xFF      SH900i FTL Footer
 >1      string   !\x00\x00             {invalid}
