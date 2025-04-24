@@ -132,8 +132,10 @@ def convert(adf_content, jar_content, sp_content):
         if v := carve_value(adf_content, 0x7E6):
             adf_dict["TargetDevice"] = v.decode("cp932")
         
+        adf_dict["DrawArea"] = "132x144"
+        
     elif adf_content[0x3E5:0x3E5+5] == b"http:":
-        print("P505i ADF type")
+        print("P505i/P506iC ADF type")
         adf_dict["AppName"] = carve_value(adf_content, 0).decode("cp932")
         
         if v := carve_value(adf_content, 0x11):
@@ -159,6 +161,37 @@ def convert(adf_content, jar_content, sp_content):
         
         if v := carve_value(adf_content, 0x826):
             adf_dict["TargetDevice"] = v.decode("cp932")
+            
+        adf_dict["DrawArea"] = "240x266"
+    elif adf_content[0x65C:0x65C+5] == b"http:":
+        print("F504iS ADF type")
+        adf_dict["AppName"] = carve_value(adf_content, 0xA).decode("cp932")
+        
+        if v := carve_value(adf_content, 0x29):
+            adf_dict["AppVer"] = v.decode("cp932")
+        
+        sp_sizes = [int.from_bytes(adf_content[0x4:0x8], "big")]
+        adf_dict["AppClass"] = carve_value(adf_content, 0x14C).decode("cp932")
+        
+        if v := carve_value(adf_content, 0x14C):
+            adf_dict["AppParam"] = v.decode("cp932")
+        
+        adf_dict["PackageURL"] = carve_value(adf_content, 0x65C).decode("cp932")
+        
+        if adf_content[0x13B:0x13B+4] == b"CLDC":
+            adf_dict["ConfigurationVer"] = adf_content[0x13B:0x143].decode("cp932")
+        
+        adf_dict["LastModified"] = carve_value(adf_content, 0x34B).decode("cp932")
+        adf_dict["LastModified"] = email.utils.parsedate_to_datetime(adf_dict["LastModified"])
+        adf_dict["LastModified"] = format_last_modified(adf_dict["LastModified"])
+        
+        if adf_content[0x143:0x143+4] == b"DoJa":
+            adf_dict["ProfileVer"] = adf_content[0x13B:0x143].decode("cp932")
+        
+        if v := carve_value(adf_content, 0x390):
+            adf_dict["TargetDevice"] = v.decode("cp932")
+        
+        adf_dict["DrawArea"] = "132x176"
     else:
         raise ValueError("Unknown ADF type")
     
