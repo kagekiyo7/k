@@ -2,7 +2,7 @@ import sys
 import os
 import zipfile
 import re
-import shutil
+import io
 
 utf8_pattern = re.compile(
     rb'(?:[\x09\x0A\x0D\x20-\x7E]|'  # ASCII
@@ -17,19 +17,55 @@ utf8_pattern = re.compile(
 )
 
 def find_jad_start(content, appname_off):
-    min_range = appname_off-0x4000
-    max_range = appname_off+0x4000
-    iter = utf8_pattern.finditer(content[min_range:max_range])
+    min_search = appname_off-0x4000
+    max_search = appname_off+0x4000
+    utf8_matches = utf8_pattern.finditer(content[min_search:max_search])
 
-    for m in iter:
-        if (m.start()+min_range) <= appname_off <= (m.end()+min_range):
-            return m.start() + min_range
+    for m in utf8_matches:
+        min_off = m.start() + min_search
+        max_off = m.end() + min_search
+        if min_off <= appname_off < max_off:
+            return min_off
     
     return -1
 
 
 def extract_jar_name(url_str):
-    return re.findall(r'([^&=\\/:*?"<>|]+)\.jar', url_str)[-1]
+    m = re.findall(r'([^&=\\/:*?"<>|]+)\.jar', url_str)
+    if m:
+        ret = m[-1]
+    else:
+        print(f"WARN: Failed to extract the jar name ({url_str})")
+        ret = "empty"
+    return ret
+
+class JarValidationError(Exception):
+    """JAR file validation error"""
+    pass
+
+def verify_jar(jar_data):
+    """
+    Verify the validity of a JAR file
+    
+    Args:
+        jar_data (bytes): JAR file binary data
+        
+    Raises:
+        JarValidationError: If the JAR file is invalid
+    """
+    if jar_data[0:4] != b"PK\x03\x04":
+        raise JarValidationError("Invalid ZIP file format (incorrect magic number)")
+    
+    try:
+        with io.BytesIO(jar_data) as jar_stream, zipfile.ZipFile(jar_stream, "r") as f:
+            corrupted_file = f.testzip()
+            if corrupted_file is not None:
+                raise JarValidationError(f"Corrupted file detected: {corrupted_file}")
+                
+    except zipfile.BadZipFile as e:
+        raise JarValidationError(f"ZIP format reading error: {str(e)}") from e
+    except Exception as e:
+        raise JarValidationError(f"Unexpected error occurred: {str(e)}") from e
 
 def carve_jad_and_jar(content, out_path):
     off = 0
@@ -45,9 +81,10 @@ def carve_jad_and_jar(content, out_path):
         
         jad_end = re.search(utf8_pattern, content[jad_start:len(content)]).end() + jad_start
         
-        temp = content.find(b"PK\x03\x04", jad_start, jad_end+2)
-        if temp != -1 and temp < jad_end:
-            jad_end = temp
+        # if "PK" is included at the jad end
+        jar_offset = content.find(b"PK\x03\x04", jad_start, jad_end+2)
+        if jar_offset != -1 and jar_offset < jad_end:
+            jad_end = jar_offset
         
         jad_content = content[jad_start:jad_end]
         #print(hex(jad_start), hex(jad_end), jad_content)
@@ -56,18 +93,11 @@ def carve_jad_and_jar(content, out_path):
         app_name = re.search(r"MIDlet-Name:\x20?([^\r\n]+)" ,jad_str)[1]
         try:
             file_name = extract_jar_name(re.search(r"MIDlet-Jar-URL:\x20?([^\r\n]+)" ,jad_str)[1])
-            print(f'\nfound {file_name}.jad (appname: {app_name}, start: {hex(jad_start)})')
+            print(f"\nfound {file_name}.jad (appname: '{app_name}', start: {hex(jad_start)})'")
         except TypeError:
-            print(f"\nno 'MIDlet-Jar-URL:' (appname: {app_name}, start: {hex(jad_start)})")
+            print(f"\nno 'MIDlet-Jar-URL:' (appname: '{app_name}', start: {hex(jad_start)})")
             continue
         
-        
-        out_name = file_name
-        if os.path.exists(os.path.join(out_path, file_name + ".jad")):
-            out_name = out_name + "_"
-        
-        with open(os.path.join(out_path, out_name + ".jad"), "wb") as jad_f:
-            jad_f.write(jad_content)
         
         # jar part
         if m := re.search(r"MIDlet-Jar-Size:\x20?([^\r\n]+)" ,jad_str):
@@ -83,24 +113,32 @@ def carve_jad_and_jar(content, out_path):
         jar_end = jar_start + jar_size
         print(f"found {file_name}.jar (start: {hex(jar_start)}, size: {jar_size} bytes)")
         
+        jar_content = content[jar_start:jar_end]
+
+        try:
+            verify_jar(jar_content)
+        except JarValidationError as e:
+            print(f"WARN: {str(e)}")
+            file_name = file_name + " (corrupted)"
+
+        out_name = file_name
         
+        i = 1
+        if os.path.exists(os.path.join(out_path, out_name + ".jad")):
+            while True:
+                out_name = f"{file_name} ({i})"
+                if not os.path.exists(os.path.join(out_path,  out_name + ".jad")): break
+                i += 1
+        
+        with open(os.path.join(out_path, out_name + ".jad"), "wb") as jad_f:
+            jad_f.write(jad_content)
+
         jar_out_path = os.path.join(out_path, out_name + ".jar")
         with open(jar_out_path, "wb") as jar_f:
             jar_f.write(content[jar_start:jar_end])
+
+        print(f"Output name: {out_name}")
         
-        # test a extraction
-        try:
-            zip = zipfile.ZipFile(jar_out_path)
-            zip.extractall("__temp")
-        except Exception as e:
-            print(f"WAMN: the jar is corrupted. ({e})")
-        finally:
-            try:
-                shutil.rmtree("__temp")
-            except:
-                pass
-
-
 
 def main():
     print("Start")
