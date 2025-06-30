@@ -38,7 +38,7 @@ parser.add_argument(
 parser.add_argument(
     "-s",
     "--start_jam",
-    help="offset of the jam in the dat. (default:0xD3C, SO903iTV: 0xD44, SO902i, SO702i: 0xDF4)",
+    help="offset of the jam in the dat. (default:0xD3C, SO903iTV: 0xD44, SO902i, SO702i: 0xDF4, SO905i: 0xF7A, SO906i: 0xF84)",
     default=0xD3C,
     type=int_with_base,
 )
@@ -132,8 +132,11 @@ def main(dats, base_dir):
             if os.path.isfile(scr_path): 
                 with open(scr_path, 'rb') as file:
                     sp_content = file.read()
-                    new_sp_content = remove_oob(sp_content)
-                    new_sp_content = add_header_to_sp(jam_str, new_sp_content)
+
+                new_sp_content = remove_oob(sp_content)
+                if new_sp_content[:0x16] == bytes.fromhex("00 11 80 01 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 00 00 40"):
+                    new_sp_content = new_sp_content[0x16:]
+                new_sp_content = add_header_to_sp(jam_str, new_sp_content)
             
             # Check for duplicate files
             while True:
