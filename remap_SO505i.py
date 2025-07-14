@@ -1,16 +1,25 @@
 import sys
 import re
 import os
+import argparse
+
+parser = argparse.ArgumentParser(description="SO505i FTL Remapper")
+parser.add_argument("input", help="A file with the same name and the .oob extension must be present in the same folder.")
+parser.add_argument("-o", "--output")
+args = parser.parse_args()
 
 def detect_sector_per_block(oob_data):
     count = 0
     for i in range(len(oob_data) // 0x10):
+        print(hex(i))
         oob_sector = oob_data[
             i * 0x10 :
             (i+1) * 0x10
         ]
 
-        if int.from_bytes(oob_sector[0xB:0xD]) == b"\xFF" * 2: continue
+        if oob_sector[0xB:0xD] == b"\xFF" * 2:
+            print("skipping...")
+            continue
 
         block_id = (int.from_bytes(oob_sector[0xB:0xD], "big") & 0x0FFF) >> 1
         if count == 0:
@@ -22,24 +31,21 @@ def detect_sector_per_block(oob_data):
             else:
                 return count
 
-                          
-    
-
-
-
-
 
 def main():
-    with open(sys.argv[1], "rb") as inf:
+    with open(args.input, "rb") as inf:
         main_data = inf.read()
 
-    with open(re.sub(r"\.bin$", ".oob", sys.argv[1]), "rb") as inf:
+    with open(re.sub(r"\.bin$", ".oob", args.input), "rb") as inf:
         oob_data = inf.read()
 
-    output = os.path.join(
-        os.path.dirname(sys.argv[1]),
-        f"{os.path.splitext(os.path.basename(sys.argv[1]))[0]}_remapped.bin"
-    )
+    if args.output is not None:
+        output = args.output
+    else:
+        output = os.path.join(
+            os.path.dirname(args.input),
+            f"{os.path.splitext(os.path.basename(args.input))[0]}_remapped.bin"
+        )
 
     sector_per_block = detect_sector_per_block(oob_data)
     if sector_per_block == 0: raise ValueError("Failure to detect a sector_per_block.")
@@ -69,7 +75,7 @@ def main():
             continue
 
         if oob_sector[:4] == b"\x00\x00\x00\x00":
-            pass#continue
+            pass
 
             
         if block_id in chunk_dict:
