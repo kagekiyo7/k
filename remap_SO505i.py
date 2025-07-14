@@ -10,18 +10,18 @@ args = parser.parse_args()
 
 def detect_sector_per_block(oob_data):
     count = 0
+
+    start = 0 
     for i in range(len(oob_data) // 0x10):
-        print(hex(i))
-        oob_sector = oob_data[
-            i * 0x10 :
-            (i+1) * 0x10
-        ]
+        if oob_data[(i*0x10) + 0xB : (i*0x10) + 0xD] != b"\xFF" * 2:
+            break
+        else:
+            start += 1
 
-        if oob_sector[0xB:0xD] == b"\xFF" * 2:
-            print("skipping...")
-            continue
 
-        block_id = (int.from_bytes(oob_sector[0xB:0xD], "big") & 0x0FFF) >> 1
+    for i in range(start, len(oob_data) // 0x10):
+        block_id = (int.from_bytes(oob_data[(i*0x10) + 0xB : (i*0x10) + 0xD], "big") & 0x0FFF) >> 1
+        
         if count == 0:
             reference_block_id = block_id
             count += 1
