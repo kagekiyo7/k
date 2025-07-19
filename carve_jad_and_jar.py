@@ -76,13 +76,11 @@ def carve_jad_and_jar(dump_data, output_dir):
     while True:
         # JAD part
         appname_off = dump_data.find(b"MIDlet-Name:", appname_off+1)
-        if appname_off == -1: break
+        
+        if appname_off == -1:
+            break
 
         (jad_start, jad_end) = find_jad_offset(dump_data, appname_off)
-        
-        if jad_start == -1:
-            print(f"JAD starting offset not found. ({hex(appname_off)})")
-            break
         
         # Avoid the case where the JAR signature "PK" is included at the end.
         pkoff = dump_data.find(b"PK\x03\x04", jad_start, jad_end+2)
