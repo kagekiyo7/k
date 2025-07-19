@@ -3,6 +3,8 @@ import os
 import zipfile
 import re
 import io
+import argparse
+
 
 utf8_pattern = re.compile(
     rb'(?:[\x09\x0A\x0D\x20-\x7E]|'  # ASCII
@@ -16,18 +18,18 @@ utf8_pattern = re.compile(
     rb')+'
 )
 
-def find_jad_start(content, appname_off):
+def find_jad_offset(dump_data, appname_off):
     min_search = appname_off-0x4000
     max_search = appname_off+0x4000
-    utf8_matches = utf8_pattern.finditer(content[min_search:max_search])
+    utf8_matches = utf8_pattern.finditer(dump_data[min_search:max_search])
 
     for m in utf8_matches:
         min_off = m.start() + min_search
         max_off = m.end() + min_search
         if min_off <= appname_off < max_off:
-            return min_off
+            return (min_off, max_off)
     
-    return -1
+    raise Exception()
 
 
 def extract_jar_name(url_str):
@@ -42,6 +44,7 @@ def extract_jar_name(url_str):
 class JarValidationError(Exception):
     """JAR file validation error"""
     pass
+
 
 def verify_jar(jar_data):
     """
@@ -67,53 +70,50 @@ def verify_jar(jar_data):
     except Exception as e:
         raise JarValidationError(f"Unexpected error occurred: {str(e)}") from e
 
-def carve_jad_and_jar(content, out_path):
-    off = 0
+
+def carve_jad_and_jar(dump_data, output_dir):
+    appname_off = -1
     while True:
-        # jad part
-        appname_off = content.find(b"MIDlet-Name:", off)
-        off = appname_off + 1
+        # JAD part
+        appname_off = dump_data.find(b"MIDlet-Name:", appname_off+1)
         if appname_off == -1: break
-        jad_start = find_jad_start(content, appname_off)
+
+        (jad_start, jad_end) = find_jad_offset(dump_data, appname_off)
+        
         if jad_start == -1:
-            print(f"jad starting offset not found. ({hex(appname_off)})")
+            print(f"JAD starting offset not found. ({hex(appname_off)})")
             break
         
-        jad_end = re.search(utf8_pattern, content[jad_start:len(content)]).end() + jad_start
+        # Avoid the case where the JAR signature "PK" is included at the end.
+        pkoff = dump_data.find(b"PK\x03\x04", jad_start, jad_end+2)
+        if pkoff != -1 and pkoff < jad_end:
+            jad_end = pkoff
         
-        # if "PK" is included at the jad end
-        jar_offset = content.find(b"PK\x03\x04", jad_start, jad_end+2)
-        if jar_offset != -1 and jar_offset < jad_end:
-            jad_end = jar_offset
-        
-        jad_content = content[jad_start:jad_end]
+        jad_content = dump_data[jad_start:jad_end]
+        if jad_content.find(b"MIDlet-Jar-URL:") == -1 or jad_content.find(b"MIDlet-Jar-Size") == -1:
+            continue
+
         #print(hex(jad_start), hex(jad_end), jad_content)
         jad_str = jad_content.decode("utf-8")
 
-        app_name = re.search(r"MIDlet-Name:\x20?([^\r\n]+)" ,jad_str)[1]
         try:
+            app_name = re.search(r"MIDlet-Name:\x20?([^\r\n]+)" ,jad_str)[1]
             file_name = extract_jar_name(re.search(r"MIDlet-Jar-URL:\x20?([^\r\n]+)" ,jad_str)[1])
-            print(f"\nfound {file_name}.jad (appname: '{app_name}', start: {hex(jad_start)})'")
-        except TypeError:
-            print(f"\nno 'MIDlet-Jar-URL:' (appname: '{app_name}', start: {hex(jad_start)})")
+            jar_size = int(re.search(r"MIDlet-Jar-Size:\x20?([^\r\n]+)" ,jad_str)[1])
+            print(f"\nfound {file_name}.jad (appname: '{app_name}', start: {hex(jad_start)})")
+        except Exception as e:
+            print(f"\nJAD Parsing Error: (appname: '{app_name}', start: {hex(jad_start)}) ({e})")
             continue
         
-        
-        # jar part
-        if m := re.search(r"MIDlet-Jar-Size:\x20?([^\r\n]+)" ,jad_str):
-            jar_size = int(m[1])
-        else:
-            jar_size = 10000000
-            print("WAMN: no 'MIDlet-Jar-Size'")
-        
-        jar_start = content.find(b"PK\x03\x04", jad_end, jad_end+0x2000)
+        # JAR part
+        jar_start = dump_data.find(b"PK\x03\x04", jad_end, jad_end+0x2000)
         if jar_start == -1:
             print("WAMN: jar not found.")
             continue
         jar_end = jar_start + jar_size
         print(f"found {file_name}.jar (start: {hex(jar_start)}, size: {jar_size} bytes)")
         
-        jar_content = content[jar_start:jar_end]
+        jar_content = dump_data[jar_start:jar_end]
 
         try:
             verify_jar(jar_content)
@@ -124,26 +124,33 @@ def carve_jad_and_jar(content, out_path):
         out_name = file_name
         
         i = 1
-        if os.path.exists(os.path.join(out_path, out_name + ".jad")):
+        if os.path.exists(os.path.join(output_dir, out_name + ".jad")):
             while True:
                 out_name = f"{file_name} ({i})"
-                if not os.path.exists(os.path.join(out_path,  out_name + ".jad")): break
+                if not os.path.exists(os.path.join(output_dir,  out_name + ".jad")): break
                 i += 1
         
-        with open(os.path.join(out_path, out_name + ".jad"), "wb") as jad_f:
+        with open(os.path.join(output_dir, out_name + ".jad"), "wb") as jad_f:
             jad_f.write(jad_content)
 
-        jar_out_path = os.path.join(out_path, out_name + ".jar")
-        with open(jar_out_path, "wb") as jar_f:
-            jar_f.write(content[jar_start:jar_end])
+        with open(os.path.join(output_dir, out_name + ".jar"), "wb") as jar_f:
+            jar_f.write(dump_data[jar_start:jar_end])
 
         print(f"Output name: {out_name}")
         
 
 def main():
+    parser = argparse.ArgumentParser("JAD/JAR Carver", description="Extract the JAD/JAR from the firmware. It is required that the file is not chunked, the JAR follows the JAD, and the JAR size specified in the JAD is correct.")
+    parser.add_argument("input")
+    parser.add_argument("-o", "--output", default=None)
+    args = parser.parse_args()
+    output_dir = args.output or os.path.dirname(args.input)
+    os.makedirs(output_dir, exist_ok=True)
+    
+    
     print("Start")
-    with open(sys.argv[1], "rb") as file: 
-        carve_jad_and_jar(file.read(), os.path.join(os.path.dirname(sys.argv[1])))
+    with open(args.input, "rb") as file: 
+        carve_jad_and_jar(file.read(), output_dir)
     print("\nEnd")
 
 
