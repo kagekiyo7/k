@@ -14,6 +14,7 @@ CONFIGS = {
     "SO505iS": {
         "sp_type": Sp_type.MULTI,
         "draw_area": "240x240",
+        "device_name": "SO505iS",
         "AppSize_off":0x30,
         "total_spsize_off":0x34,
         "AppName_off": 0x3C,
@@ -154,10 +155,12 @@ def perse_adf(app_data, adf2_data, model_config):
 
     if app_data[model_config["TargetDevice_off"]] != 0:
         adf_dict["TargetDevice"] = parse_value(model_config["TargetDevice_off"], app_data)
+    else:
+        adf_dict["TargetDevice"] = model_config["device_name"]
 
     # Parse adf. order: download_jam_url, appname, [appver], appclass, download_jar_url, 
     if (start := adf2_data.find(b"http:")) != -1:
-        end = (len(adf2_data)+1) - start
+        end = len(adf2_data) - start
         if (temp := adf2_data.find(b"\x00\x00", start)) == -1:
             end = temp
         
