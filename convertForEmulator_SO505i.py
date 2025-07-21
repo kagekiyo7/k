@@ -158,11 +158,12 @@ def perse_adf(app_data, adf2_data, model_config):
     else:
         adf_dict["TargetDevice"] = model_config["device_name"]
 
-    # Parse adf. order: download_jam_url, appname, [appver], appclass, download_jar_url, 
+    # adf2 order: download_jam_url, appname, [appver], appclass, download_jar_url, 
     if (start := adf2_data.find(b"http:")) != -1:
-        end = len(adf2_data) - start
-        if (temp := adf2_data.find(b"\x00\x00", start)) == -1:
-            end = temp
+        if (temp := adf2_data.find(b"\x00\x00", start)) != -1:
+            end = start + temp
+        else:
+            end = len(adf2_data)
         
         adf_items = filter(None, adf2_data[start:end].split(b"\x00"))
         adf_items = list(map(lambda b: b.decode("cp932", errors="replace"), adf_items))
