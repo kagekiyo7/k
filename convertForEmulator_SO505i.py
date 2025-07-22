@@ -11,12 +11,27 @@ class Sp_type(Enum):
     MULTI = auto()
 
 CONFIGS = {
+    "SO505i": {
+        "sp_type": Sp_type.MULTI,
+        "draw_area": "240x240",
+        "device_name": "SO505i",
+        "AppSize_off": 0x30,
+        "total_spsize_off": 0x34,
+        "AppName_off": 0x3C,
+        "PackageURL_off": 0x64,
+        "ProfileVer_off": 0x168,
+        "AppClass_off": 0x1BC,
+        "AppParam_off": None,
+        "TargetDevice_off": 0x614,
+        "LastModified_off": 0x6F0,
+        "adf2_SPsize_off": 0x20,
+    },
     "SO505iS": {
         "sp_type": Sp_type.MULTI,
         "draw_area": "240x240",
         "device_name": "SO505iS",
-        "AppSize_off":0x30,
-        "total_spsize_off":0x34,
+        "AppSize_off": 0x30,
+        "total_spsize_off": 0x34,
         "AppName_off": 0x3C,
         "PackageURL_off": 0x64,
         "ProfileVer_off": 0x168,
@@ -26,7 +41,21 @@ CONFIGS = {
         "LastModified_off": 0x7F0,
         "adf2_SPsize_off": 0x20,
     },
-
+    "SO506i": {
+        "sp_type": Sp_type.MULTI,
+        "draw_area": "240x240",
+        "device_name": "SO506i",
+        "AppSize_off": 0x34,
+        "total_spsize_off": 0x38,
+        "AppName_off": 0x40,
+        "PackageURL_off": 0x68,
+        "ProfileVer_off": 0x16C,
+        "AppClass_off": 0x1C0,
+        "AppParam_off": None,
+        "TargetDevice_off": 0x818,
+        "LastModified_off": 0x8F4,
+        "adf2_SPsize_off": 0x20,
+    },
 }
 
 def main(model_config, input_dir, output_dir):
@@ -91,6 +120,11 @@ def convert(app_data, model_config):
 
     adf_dict = perse_adf(app_data, adf2_data, model_config)
 
+    if not "TargetDevice" in adf_dict:
+        adf_dict["TargetDevice"] = model_config["device_name"]
+
+    adf_dict["DrawArea"] = model_config["draw_area"]
+
     # Re-format LastModified
     adf_dict["LastModified"] = email.utils.parsedate_to_datetime(adf_dict["LastModified"])
     adf_dict["LastModified"] = format_last_modified(adf_dict["LastModified"])
@@ -147,31 +181,29 @@ def perse_adf(app_data, adf2_data, model_config):
     adf_dict["LastModified"] = parse_value(model_config["LastModified_off"], app_data)
     adf_dict["AppClass"] = parse_value(model_config["AppClass_off"], app_data)
 
-    if app_data[model_config["ProfileVer_off"]] != 0:
+    if model_config["ProfileVer_off"] is not None and app_data[model_config["ProfileVer_off"]] != 0:
         adf_dict["ProfileVer"] = parse_value(model_config["ProfileVer_off"], app_data)
 
-    if app_data[model_config["AppParam_off"]] != 0:
+    if model_config["AppParam_off"] is not None and app_data[model_config["AppParam_off"]] != 0:
         adf_dict["AppParam"] = parse_value(model_config["AppParam_off"], app_data)
 
-    if app_data[model_config["TargetDevice_off"]] != 0:
+    if model_config["TargetDevice_off"] is not None and app_data[model_config["TargetDevice_off"]] != 0:
         adf_dict["TargetDevice"] = parse_value(model_config["TargetDevice_off"], app_data)
-    else:
-        adf_dict["TargetDevice"] = model_config["device_name"]
 
-    # adf2 order: download_jam_url, appname, [appver], appclass, download_jar_url, 
+    # adf2 order: download_jam_url, appname, [appver], [appparam], appclass, download_jar_url, 
     if (start := adf2_data.find(b"http:")) != -1:
         if (temp := adf2_data.find(b"\x00\x00", start)) != -1:
-            end = start + temp
+            end = temp
         else:
             end = len(adf2_data)
-        
-        adf_items = filter(None, adf2_data[start:end].split(b"\x00"))
+
+        adf_items = adf2_data[start:end].split(b"\x00")
         adf_items = list(map(lambda b: b.decode("cp932", errors="replace"), adf_items))
     else:
         raise Exception("adf2_data hasn't URL")
 
-    adf_dict["AppVer"] = adf_items[2]
-    adf_dict["DrawArea"] = model_config["draw_area"]
+    if adf_dict.get("AppParam") != adf_items[2] and adf_dict.get("AppClass") != adf_items[2]:
+        adf_dict["AppVer"] = adf_items[2]
 
     print(f"{adf_dict=}")
     return adf_dict
@@ -221,6 +253,10 @@ if __name__ == "__main__":
     parser.add_argument("model", choices=CONFIGS.keys())
     parser.add_argument("-o", "--output", default=None)
     args = parser.parse_args()
+
+    for key in ["ProfileVer_off", "AppParam_off", "TargetDevice_off"]:
+        if CONFIGS[args.model][key] is None:
+            print(f"WARN: The key '{key}' has not been defined yet in the {args.model} configuration." )
 
     output = args.output or os.path.join(os.path.dirname(args.input), "java_output")
     main(CONFIGS[args.model], args.input, output)
