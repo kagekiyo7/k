@@ -24,6 +24,7 @@ CONFIGS = {
         "AppParam_off": None,
         "TargetDevice_off": 0x614,
         "LastModified_off": 0x6F0,
+        "jar_off": 0xF60,
         "adf2_SPsize_off": 0x20,
     },
     "SO505iS": {
@@ -39,6 +40,7 @@ CONFIGS = {
         "AppParam_off": 0x2BC,
         "TargetDevice_off": 0x614,
         "LastModified_off": 0x7F0,
+        "jar_off": 0x1064,
         "adf2_SPsize_off": 0x20,
     },
     "SO506i": {
@@ -54,6 +56,7 @@ CONFIGS = {
         "AppParam_off": None,
         "TargetDevice_off": 0x818,
         "LastModified_off": 0x8F4,
+        "jar_off": 0x11F8,
         "adf2_SPsize_off": 0x20,
     },
 }
@@ -97,7 +100,10 @@ def main(model_config, input_dir, output_dir):
 
 
 def convert(app_data, model_config):
-    jar_start = app_data.find(b"PK\x03\x04")
+    jar_start = model_config["jar_off"]
+    if app_data[jar_start:jar_start+4] != b"PK\x03\x04":
+        raise Exception("The JAR offset is incorrect.")
+
     jar_size = int.from_bytes(app_data[model_config["AppSize_off"] : model_config["AppSize_off"]+4], "little")
     jar_end = jar_start + jar_size
 
