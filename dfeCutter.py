@@ -32,11 +32,7 @@ def process_file(input_path, start_address, output_dir):
 
     try:
         with open(input_path, "rb") as inf:
-            inf.seek(start_address)
             file_data = inf.read()
-
-            if not file_data:
-                return f"Ignored: {file_name} (Empty or Symbolic Link)"
 
             if file_data[0:1] == b"/":
                 try:
@@ -44,6 +40,9 @@ def process_file(input_path, start_address, output_dir):
                     return f"Ignored: {file_name} (Symbolic Link)"
                 except:
                     pass
+
+            if len(file_data) <= start_address:
+                return f"Ignored: {file_name} (Empty)"
 
             # Change the file name if it is duplicated.
             with file_write_lock:
@@ -54,7 +53,7 @@ def process_file(input_path, start_address, output_dir):
                     count += 1
 
                 with open(output_path, "wb") as outf:
-                    outf.write(file_data)
+                    outf.write(file_data[start_address:])
 
         return f"Processed: {file_name}"
     except Exception as e:
