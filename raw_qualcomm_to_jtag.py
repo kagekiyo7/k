@@ -29,8 +29,6 @@ if args.input_type == "interleaved":
             new_chunk += data_chunk[0x20E:0x210]
             new_chunk += data_chunk[0x20E:0x210]
 
-            assert len(new_chunk) == page_size
-
             outf.write(new_chunk[:data_page_size])
             oob_buffer.extend(new_chunk[data_page_size:])
         outf.write(oob_buffer)
@@ -50,8 +48,6 @@ elif args.input_type == "separate":
             new_oob_chunk = oob_chunk[0x2:0xE]
             new_oob_chunk += oob_chunk[0xE:0x10]
             new_oob_chunk += oob_chunk[0xE:0x10]
-
-            if i == 0: print(hex(len(new_data_chunk)), hex(len(new_oob_chunk)), hex(page_size))
 
             outf.write(new_data_chunk)
             oob_buffer.extend(new_oob_chunk)
