@@ -105,7 +105,7 @@ def convert(adf_content, jar_content, sp_content):
     adf_dict = {}
 
     if adf_content[0x3A5:0x3A5+5] == b"http:":
-        print("P504i ADF type")
+        print("P504i/P504iS ADF type")
         adf_dict["AppName"] = carve_value(adf_content, 0).decode("cp932")
         
         if v := carve_value(adf_content, 0x11):
@@ -253,6 +253,7 @@ def add_header_to_sp(jam_str, sp_contents):
 
     return header + sp_contents
 
+
 def format_last_modified(last_modified_dt):
     weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
     months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
@@ -262,6 +263,7 @@ def format_last_modified(last_modified_dt):
 
     last_modified_str = last_modified_dt.strftime(f"{weekday_name}, %d {month_name} %Y %H:%M:%S")
     return last_modified_str
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
