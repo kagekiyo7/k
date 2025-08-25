@@ -6,13 +6,13 @@ import traceback
 from enum import Enum, auto
 import argparse
 
-class Sp_type(Enum):
+class SpType(Enum):
     SINGLE = auto()
     MULTI = auto()
 
 CONFIGS = {
     "SO505i": {
-        "sp_type": Sp_type.MULTI,
+        "sp_type": SpType.MULTI,
         "draw_area": "240x240",
         "device_name": "SO505i",
         "AppSize_off": 0x30,
@@ -28,7 +28,7 @@ CONFIGS = {
         "adf2_SPsize_off": 0x20,
     },
     "SO505iS": {
-        "sp_type": Sp_type.MULTI,
+        "sp_type": SpType.MULTI,
         "draw_area": "240x240",
         "device_name": "SO505iS",
         "AppSize_off": 0x30,
@@ -44,7 +44,7 @@ CONFIGS = {
         "adf2_SPsize_off": 0x20,
     },
     "SO506i": {
-        "sp_type": Sp_type.MULTI,
+        "sp_type": SpType.MULTI,
         "draw_area": "240x240",
         "device_name": "SO506i",
         "AppSize_off": 0x34,
@@ -53,7 +53,7 @@ CONFIGS = {
         "PackageURL_off": 0x68,
         "ProfileVer_off": 0x16C,
         "AppClass_off": 0x1C0,
-        "AppParam_off": None,
+        "AppParam_off": 0x2C0,
         "TargetDevice_off": 0x818,
         "LastModified_off": 0x8F4,
         "jar_off": 0x11F8,
@@ -114,9 +114,9 @@ def convert(app_data, model_config):
 
     sp_type = model_config["sp_type"]
     try:
-        if sp_type == Sp_type.MULTI:
+        if sp_type == SpType.MULTI:
             sp_sizes = read_spsizes_from_adf(adf2_data, model_config["adf2_SPsize_off"])
-        elif sp_type == Sp_type.SINGLE:
+        elif sp_type == SpType.SINGLE:
             sp_sizes = [struct.unpack('<I', adf2_data[model_config["adf2_SPsize_off"] : model_config["adf2_SPsize_off"] + 4])[0]]
         else:
             raise Exception("no sp_type input")
